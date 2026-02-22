@@ -6,6 +6,28 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		693636172F46D81A004ED905 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636162F46D81A004ED905 /* SplashView.swift */; };
+		693636192F46D834004ED905 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636182F46D834004ED905 /* OnboardingView.swift */; };
+		6936361B2F46D84D004ED905 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936361A2F46D84D004ED905 /* LoginView.swift */; };
+		6936361D2F46D85B004ED905 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936361C2F46D85B004ED905 /* SignupView.swift */; };
+		6936361F2F46D870004ED905 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936361E2F46D870004ED905 /* HomeView.swift */; };
+		693636212F46D880004ED905 /* DestinationSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636202F46D880004ED905 /* DestinationSearchView.swift */; };
+		693636232F46D898004ED905 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636222F46D898004ED905 /* PreferencesView.swift */; };
+		693636252F46D8AD004ED905 /* ItineraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636242F46D8AD004ED905 /* ItineraryView.swift */; };
+		693636272F46D8C0004ED905 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636262F46D8C0004ED905 /* MapView.swift */; };
+		693636292F46D8CF004ED905 /* SavedTripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636282F46D8CF004ED905 /* SavedTripsView.swift */; };
+		6936362B2F46D8DF004ED905 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936362A2F46D8DF004ED905 /* ProfileView.swift */; };
+		6936362D2F46E3B1004ED905 /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936362C2F46E3B1004ED905 /* Trip.swift */; };
+		693636312F46E6D2004ED905 /* TripService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636302F46E6D2004ED905 /* TripService.swift */; };
+		693636332F46E874004ED905 /* PreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636322F46E874004ED905 /* PreferencesViewModel.swift */; };
+		693636352F46EAD1004ED905 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636342F46EAD1004ED905 /* NetworkManager.swift */; };
+		693636382F46ECFF004ED905 /* ItineraryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693636372F46ECFF004ED905 /* ItineraryModels.swift */; };
+		6936363B2F46EFE4004ED905 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936363A2F46EFE4004ED905 /* AppRoute.swift */; };
+		693DEADC2F480CB700735C2B /* TripRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693DEADB2F480CB700735C2B /* TripRequest.swift */; };
+		693DEADE2F48118C00735C2B /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693DEADD2F48118C00735C2B /* NetworkError.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6911A7C42F459AD40051D980 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +49,43 @@
 		6911A7B12F459AD30051D980 /* Tripzync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tripzync.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6911A7C32F459AD40051D980 /* TripzyncTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TripzyncTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6911A7CD2F459AD40051D980 /* TripzyncUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TripzyncUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		693636162F46D81A004ED905 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		693636182F46D834004ED905 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		6936361A2F46D84D004ED905 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		6936361C2F46D85B004ED905 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
+		6936361E2F46D870004ED905 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		693636202F46D880004ED905 /* DestinationSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationSearchView.swift; sourceTree = "<group>"; };
+		693636222F46D898004ED905 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		693636242F46D8AD004ED905 /* ItineraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItineraryView.swift; sourceTree = "<group>"; };
+		693636262F46D8C0004ED905 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		693636282F46D8CF004ED905 /* SavedTripsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedTripsView.swift; sourceTree = "<group>"; };
+		6936362A2F46D8DF004ED905 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		6936362C2F46E3B1004ED905 /* Trip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		693636302F46E6D2004ED905 /* TripService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripService.swift; sourceTree = "<group>"; };
+		693636322F46E874004ED905 /* PreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesViewModel.swift; sourceTree = "<group>"; };
+		693636342F46EAD1004ED905 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		693636372F46ECFF004ED905 /* ItineraryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItineraryModels.swift; sourceTree = "<group>"; };
+		6936363A2F46EFE4004ED905 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
+		693DEADB2F480CB700735C2B /* TripRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripRequest.swift; sourceTree = "<group>"; };
+		693DEADD2F48118C00735C2B /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		693636392F46EE86004ED905 /* Exceptions for "Tripzync" folder in "Tripzync" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ContentView.swift,
+			);
+			target = 6911A7B02F459AD30051D980 /* Tripzync */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6911A7B32F459AD30051D980 /* Tripzync */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				693636392F46EE86004ED905 /* Exceptions for "Tripzync" folder in "Tripzync" target */,
+			);
 			path = Tripzync;
 			sourceTree = "<group>";
 		};
@@ -75,6 +129,12 @@
 		6911A7A82F459AD30051D980 = {
 			isa = PBXGroup;
 			children = (
+				693636362F46EC67004ED905 /* Models */,
+				6911A7E42F459CD80051D980 /* Resources */,
+				6911A7E32F459CCC0051D980 /* Services */,
+				6911A7E22F459CB40051D980 /* Modules */,
+				6911A7E12F459CAB0051D980 /* Core */,
+				6911A7E02F459C9B0051D980 /* App */,
 				6911A7B32F459AD30051D980 /* Tripzync */,
 				6911A7C62F459AD40051D980 /* TripzyncTests */,
 				6911A7D02F459AD40051D980 /* TripzyncUITests */,
@@ -90,6 +150,139 @@
 				6911A7CD2F459AD40051D980 /* TripzyncUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		6911A7E02F459C9B0051D980 /* App */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6911A7E12F459CAB0051D980 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				693636322F46E874004ED905 /* PreferencesViewModel.swift */,
+				693636342F46EAD1004ED905 /* NetworkManager.swift */,
+				6936363A2F46EFE4004ED905 /* AppRoute.swift */,
+				693DEADD2F48118C00735C2B /* NetworkError.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		6911A7E22F459CB40051D980 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				6911A7ED2F459DF70051D980 /* Profile */,
+				6911A7EC2F459DED0051D980 /* SavedTrips */,
+				6911A7EB2F459DDE0051D980 /* Map */,
+				6911A7EA2F459DCF0051D980 /* Itinerary */,
+				6911A7E92F459DC30051D980 /* Preferences */,
+				6911A7E82F459DB80051D980 /* Destination */,
+				6911A7E72F459DA60051D980 /* Home */,
+				6911A7E62F459D960051D980 /* Authentication */,
+				6911A7E52F459D800051D980 /* Onboarding */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		6911A7E32F459CCC0051D980 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				693636302F46E6D2004ED905 /* TripService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		6911A7E42F459CD80051D980 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		6911A7E52F459D800051D980 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				693636162F46D81A004ED905 /* SplashView.swift */,
+				693636182F46D834004ED905 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		6911A7E62F459D960051D980 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				6936361A2F46D84D004ED905 /* LoginView.swift */,
+				6936361C2F46D85B004ED905 /* SignupView.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		6911A7E72F459DA60051D980 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				6936361E2F46D870004ED905 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		6911A7E82F459DB80051D980 /* Destination */ = {
+			isa = PBXGroup;
+			children = (
+				693636202F46D880004ED905 /* DestinationSearchView.swift */,
+			);
+			path = Destination;
+			sourceTree = "<group>";
+		};
+		6911A7E92F459DC30051D980 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				693636222F46D898004ED905 /* PreferencesView.swift */,
+			);
+			path = Preferences;
+			sourceTree = "<group>";
+		};
+		6911A7EA2F459DCF0051D980 /* Itinerary */ = {
+			isa = PBXGroup;
+			children = (
+				693636242F46D8AD004ED905 /* ItineraryView.swift */,
+			);
+			path = Itinerary;
+			sourceTree = "<group>";
+		};
+		6911A7EB2F459DDE0051D980 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				693636262F46D8C0004ED905 /* MapView.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		6911A7EC2F459DED0051D980 /* SavedTrips */ = {
+			isa = PBXGroup;
+			children = (
+				693636282F46D8CF004ED905 /* SavedTripsView.swift */,
+			);
+			path = SavedTrips;
+			sourceTree = "<group>";
+		};
+		6911A7ED2F459DF70051D980 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				6936362A2F46D8DF004ED905 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		693636362F46EC67004ED905 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6936362C2F46E3B1004ED905 /* Trip.swift */,
+				693DEADB2F480CB700735C2B /* TripRequest.swift */,
+				693636372F46ECFF004ED905 /* ItineraryModels.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +429,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6936361D2F46D85B004ED905 /* SignupView.swift in Sources */,
+				693636292F46D8CF004ED905 /* SavedTripsView.swift in Sources */,
+				6936362D2F46E3B1004ED905 /* Trip.swift in Sources */,
+				6936361F2F46D870004ED905 /* HomeView.swift in Sources */,
+				693636272F46D8C0004ED905 /* MapView.swift in Sources */,
+				6936362B2F46D8DF004ED905 /* ProfileView.swift in Sources */,
+				693DEADE2F48118C00735C2B /* NetworkError.swift in Sources */,
+				693636312F46E6D2004ED905 /* TripService.swift in Sources */,
+				6936363B2F46EFE4004ED905 /* AppRoute.swift in Sources */,
+				693636352F46EAD1004ED905 /* NetworkManager.swift in Sources */,
+				693636172F46D81A004ED905 /* SplashView.swift in Sources */,
+				6936361B2F46D84D004ED905 /* LoginView.swift in Sources */,
+				693636252F46D8AD004ED905 /* ItineraryView.swift in Sources */,
+				693636192F46D834004ED905 /* OnboardingView.swift in Sources */,
+				693636212F46D880004ED905 /* DestinationSearchView.swift in Sources */,
+				693636232F46D898004ED905 /* PreferencesView.swift in Sources */,
+				693636332F46E874004ED905 /* PreferencesViewModel.swift in Sources */,
+				693DEADC2F480CB700735C2B /* TripRequest.swift in Sources */,
+				693636382F46ECFF004ED905 /* ItineraryModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,15 +597,18 @@
 		};
 		6911A7D82F459AD40051D980 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
+				buildSettings = {
+					API_BASE_URL = "https://tripzync.onrender.com";
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+						CODE_SIGN_STYLE = Automatic;
+					CURRENT_PROJECT_VERSION = 2;
+					ENABLE_APP_SANDBOX = YES;
+					ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+					ENABLE_PREVIEWS = YES;
+					ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/AppInfo.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -403,39 +618,40 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+					INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+					IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.Tripzync;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+					SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+					SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+					SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		6911A7D92F459AD40051D980 /* Release */ = {
 			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
+				buildSettings = {
+					API_BASE_URL = "https://tripzync.onrender.com";
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+						CODE_SIGN_STYLE = Automatic;
+					CURRENT_PROJECT_VERSION = 2;
+					ENABLE_APP_SANDBOX = YES;
+					ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+					ENABLE_PREVIEWS = YES;
+					ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/AppInfo.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -445,25 +661,23 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+					INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+					IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.Tripzync;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+					SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+					SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+					SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -472,23 +686,21 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.TripzyncTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tripzync.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tripzync";
-				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Debug;
 		};
@@ -497,23 +709,21 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.TripzyncTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tripzync.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tripzync";
-				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
@@ -521,23 +731,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.TripzyncUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = Tripzync;
-				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Debug;
 		};
@@ -545,23 +753,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Flychime.TripzyncUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = Tripzync;
-				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
