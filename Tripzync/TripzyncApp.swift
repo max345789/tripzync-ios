@@ -4,9 +4,25 @@
 //
 
 import SwiftUI
+#if canImport(FirebaseCore)
+import FirebaseCore
+#endif
+
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+#if canImport(FirebaseCore)
+        FirebaseApp.configure()
+#endif
+        return true
+    }
+}
 
 @main
 struct TripzyncApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var session = AppSession()
     @StateObject private var themeManager = ThemeManager()

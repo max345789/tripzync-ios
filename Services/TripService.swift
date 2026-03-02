@@ -70,6 +70,25 @@ final class AuthService {
         return result.data
     }
 
+    func socialLogin(provider: String, idToken: String, email: String?, name: String?) async throws -> AuthResponse {
+        let request = SocialLoginRequest(
+            provider: provider,
+            idToken: idToken,
+            email: email?.trimmingCharacters(in: .whitespacesAndNewlines),
+            name: name?.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+
+        let body = try network.encodeBody(request)
+        let result: APIResult<AuthResponse> = try await network.request(
+            path: "api/auth/social-login",
+            method: .POST,
+            body: body,
+            requiresAuth: false
+        )
+
+        return result.data
+    }
+
     func currentUser() async throws -> AuthUser {
         let result: APIResult<AuthUser> = try await network.request(
             path: "api/auth/me",
@@ -79,6 +98,15 @@ final class AuthService {
 
         return result.data
     }
+
+    func logout() async throws {
+        let _: APIResult<[String: Bool]> = try await network.request(
+            path: "api/auth/logout",
+            method: .POST,
+            body: try? network.encodeBody([String: String]()),
+            requiresAuth: true
+        )
+    }
 }
 
 final class TripService {
@@ -87,13 +115,15 @@ final class TripService {
     private let cache = TripCacheStore.shared
     private let maxListLimit = 100
 
-    func generateTrip(destination: String, days: Int, budget: BudgetTier) async throws -> Trip {
+    func generateTrip(destination: String, days: Int, budget: BudgetTier, startCity: String? = nil) async throws -> Trip {
         let normalizedDestination = try validatedDestination(destination)
         let validatedDays = try validatedDays(days)
+        let normalizedStartCity = try validatedOptionalDestination(startCity)
         let request = TripGenerateRequest(
             destination: normalizedDestination,
             days: validatedDays,
-            budget: budget.rawValue
+            budget: budget.rawValue,
+            startCity: normalizedStartCity
         )
 
         let body = try network.encodeBody(request)
@@ -149,19 +179,21 @@ final class TripService {
         return result.data
     }
 
-    func updateTrip(id: String, destination: String?, days: Int?, budget: BudgetTier?) async throws -> Trip {
+    func updateTrip(id: String, destination: String?, days: Int?, budget: BudgetTier?, startCity: String? = nil) async throws -> Trip {
         let tripID = try validatedTripID(id)
         let normalizedDestination = try validatedOptionalDestination(destination)
         let validatedDays = try validatedOptionalDays(days)
+        let normalizedStartCity = try validatedOptionalDestination(startCity)
 
-        if normalizedDestination == nil, validatedDays == nil, budget == nil {
+        if normalizedDestination == nil, validatedDays == nil, budget == nil, normalizedStartCity == nil {
             throw NetworkError.validation(message: "Provide at least one field to update.")
         }
 
         let request = TripUpdateRequest(
             destination: normalizedDestination,
             days: validatedDays,
-            budget: budget?.rawValue
+            budget: budget?.rawValue,
+            startCity: normalizedStartCity
         )
 
         let body = try network.encodeBody(request)
@@ -201,6 +233,26 @@ final class TripService {
         )
 
         await cache.store(trip: result.data)
+        return result.data
+    }
+
+    func fetchExplore(limit: Int = 12, query: String? = nil) async throws -> [ExploreSpot] {
+        let validatedLimit = try validatedLimit(limit)
+        var items: [URLQueryItem] = [URLQueryItem(name: "limit", value: String(validatedLimit))]
+
+        if let query {
+            let trimmed = InputValidator.normalize(query)
+            if !trimmed.isEmpty {
+                items.append(URLQueryItem(name: "q", value: trimmed))
+            }
+        }
+
+        let result: APIResult<[ExploreSpot]> = try await network.request(
+            path: "api/explore",
+            method: .GET,
+            queryItems: items
+        )
+
         return result.data
     }
 

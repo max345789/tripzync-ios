@@ -8,8 +8,9 @@ struct MainTabView: View {
 
     enum Tab: Hashable {
         case home
-        case plan
-        case trips
+        case itinerary
+        case map
+        case explore
         case profile
     }
 
@@ -27,20 +28,28 @@ struct MainTabView: View {
             .tag(Tab.home)
 
             NavigationStack {
-                DestinationSearchView()
-            }
-            .tabItem {
-                Label("Plan", systemImage: "map.fill")
-            }
-            .tag(Tab.plan)
-
-            NavigationStack {
                 SavedTripsView()
             }
             .tabItem {
-                Label("Trips", systemImage: "list.bullet.rectangle")
+                Label("Itinerary", systemImage: "calendar")
             }
-            .tag(Tab.trips)
+            .tag(Tab.itinerary)
+
+            NavigationStack {
+                TripsMapHubView()
+            }
+            .tabItem {
+                Label("Map", systemImage: "map")
+            }
+            .tag(Tab.map)
+
+            NavigationStack {
+                ExploreView()
+            }
+            .tabItem {
+                Label("Explore", systemImage: "safari")
+            }
+            .tag(Tab.explore)
 
             NavigationStack {
                 ProfileView()
@@ -63,10 +72,18 @@ struct MainTabView: View {
 #if os(iOS)
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 0.08, green: 0.09, blue: 0.10, alpha: 0.98)
-        appearance.shadowColor = UIColor.white.withAlphaComponent(0.08)
+        let isLight = themeManager.isLightModeEnabled
+        appearance.backgroundColor = isLight
+            ? UIColor(red: 0.96, green: 0.97, blue: 0.98, alpha: 0.98)
+            : UIColor(red: 0.06, green: 0.10, blue: 0.17, alpha: 0.98)
+        appearance.shadowColor = isLight
+            ? UIColor(red: 0.84, green: 0.89, blue: 0.95, alpha: 1.0)
+            : UIColor.white.withAlphaComponent(0.08)
 
-        let neutralIconColor = UIColor(red: 0.62, green: 0.64, blue: 0.68, alpha: 1)
+        let neutralIconColor = isLight
+            ? UIColor(red: 0.52, green: 0.58, blue: 0.66, alpha: 1.0)
+            : UIColor(red: 0.63, green: 0.68, blue: 0.77, alpha: 1.0)
+        let activeColor = UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 1.0)
 
         for tabAppearance in [
             appearance.stackedLayoutAppearance,
@@ -75,8 +92,8 @@ struct MainTabView: View {
         ] {
             tabAppearance.normal.iconColor = neutralIconColor
             tabAppearance.normal.titleTextAttributes = [.foregroundColor: neutralIconColor]
-            tabAppearance.selected.iconColor = neutralIconColor
-            tabAppearance.selected.titleTextAttributes = [.foregroundColor: neutralIconColor]
+            tabAppearance.selected.iconColor = activeColor
+            tabAppearance.selected.titleTextAttributes = [.foregroundColor: activeColor]
         }
 
         UITabBar.appearance().standardAppearance = appearance
@@ -206,7 +223,7 @@ struct HomeView: View {
                     NavigationLink {
                         SavedTripsView()
                     } label: {
-                        BrandSecondaryButtonLabel(title: "View Preview", icon: "rectangle.stack")
+                        BrandSecondaryButtonLabel(title: "My Itinerary", icon: "calendar")
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
@@ -333,6 +350,307 @@ private struct HomeFeatureCard: View {
             Spacer()
         }
         .brandCard(cornerRadius: 16, padding: 12, fillOpacity: 0.06)
+    }
+}
+
+@MainActor
+private final class TripsMapHubViewModel: ObservableObject {
+    @Published var trips: [Trip] = []
+    @Published var isLoading = false
+    @Published var error: NetworkError?
+
+    private let tripService = TripService()
+
+    func load(force: Bool = false) async {
+        if isLoading { return }
+        if !force && !trips.isEmpty { return }
+
+        isLoading = true
+        error = nil
+        defer { isLoading = false }
+
+        do {
+            let result = try await tripService.fetchTrips(limit: 20, offset: 0)
+            trips = result.trips.sorted { $0.createdAt > $1.createdAt }
+        } catch {
+            self.error = NetworkError.from(error)
+        }
+    }
+}
+
+private struct TripsMapHubView: View {
+    @StateObject private var viewModel = TripsMapHubViewModel()
+
+    var body: some View {
+        ZStack {
+            BrandBackground()
+
+            if viewModel.isLoading && viewModel.trips.isEmpty {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .tint(BrandPalette.accentCoral)
+                    Text("Loading map-ready trips...")
+                        .foregroundStyle(BrandPalette.textSecondary)
+                }
+                .brandCard()
+                .padding(.horizontal, 24)
+            } else if let error = viewModel.error, viewModel.trips.isEmpty {
+                VStack(spacing: 12) {
+                    Text(error.title)
+                        .font(.headline)
+                        .foregroundStyle(BrandPalette.textPrimary)
+                    Text(error.userMessage)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(BrandPalette.textSecondary)
+                    Button {
+                        Task { await viewModel.load(force: true) }
+                    } label: {
+                        BrandSecondaryButtonLabel(title: "Retry")
+                    }
+                }
+                .brandCard()
+                .padding(.horizontal, 24)
+            } else if viewModel.trips.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "map")
+                        .font(.system(size: 34))
+                        .foregroundStyle(BrandPalette.accentCoral)
+                    Text("No trips available")
+                        .font(.headline)
+                        .foregroundStyle(BrandPalette.textPrimary)
+                    Text("Generate a trip first, then open its route map here.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(BrandPalette.textSecondary)
+                }
+                .brandCard()
+                .padding(.horizontal, 24)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Trip Routes")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(BrandPalette.textPrimary)
+
+                        Text("Open any itinerary on map with exact coordinates.")
+                            .font(.subheadline)
+                            .foregroundStyle(BrandPalette.textSecondary)
+
+                        ForEach(viewModel.trips) { trip in
+                            let activities = trip.sortedItinerary.flatMap { $0.sortedActivities }
+
+                            NavigationLink {
+                                MapView(activities: activities, title: trip.destination)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Text(trip.destination)
+                                            .font(.headline.weight(.semibold))
+                                            .foregroundStyle(BrandPalette.textPrimary)
+                                        Spacer()
+                                        Text("\(activities.count) stops")
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(BrandPalette.accentCoral)
+                                    }
+
+                                    if let first = activities.first {
+                                        Text("Starts at \(first.title)")
+                                            .font(.subheadline)
+                                            .foregroundStyle(BrandPalette.textSecondary)
+
+                                        Text(String(format: "%.4f, %.4f", first.latitude, first.longitude))
+                                            .font(.caption)
+                                            .foregroundStyle(BrandPalette.textMuted)
+                                    } else {
+                                        Text("No mapped activities yet.")
+                                            .font(.caption)
+                                            .foregroundStyle(BrandPalette.textMuted)
+                                    }
+                                }
+                                .brandCard(cornerRadius: 18, padding: 14, fillOpacity: 0.07)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 14)
+                    .padding(.bottom, 20)
+                }
+                .refreshable {
+                    await viewModel.load(force: true)
+                }
+            }
+        }
+        .navigationTitle("Map")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.load()
+        }
+    }
+}
+
+@MainActor
+private final class ExploreViewModel: ObservableObject {
+    @Published var spots: [ExploreSpot] = []
+    @Published var isLoading = false
+    @Published var error: NetworkError?
+
+    private let tripService = TripService()
+
+    func load(force: Bool = false) async {
+        if isLoading { return }
+        if !force && !spots.isEmpty { return }
+
+        isLoading = true
+        error = nil
+        defer { isLoading = false }
+
+        do {
+            spots = try await tripService.fetchExplore(limit: 12)
+        } catch {
+            self.error = NetworkError.from(error)
+        }
+    }
+}
+
+private struct ExploreView: View {
+    @StateObject private var viewModel = ExploreViewModel()
+
+    var body: some View {
+        ZStack {
+            BrandBackground()
+
+            if viewModel.isLoading && viewModel.spots.isEmpty {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .tint(BrandPalette.accentCoral)
+                    Text("Loading personalized spots...")
+                        .foregroundStyle(BrandPalette.textSecondary)
+                }
+                .brandCard()
+                .padding(.horizontal, 24)
+            } else if let error = viewModel.error, viewModel.spots.isEmpty {
+                VStack(spacing: 12) {
+                    Text(error.title)
+                        .font(.headline)
+                        .foregroundStyle(BrandPalette.textPrimary)
+                    Text(error.userMessage)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(BrandPalette.textSecondary)
+                    Button {
+                        Task { await viewModel.load(force: true) }
+                    } label: {
+                        BrandSecondaryButtonLabel(title: "Retry")
+                    }
+                }
+                .brandCard()
+                .padding(.horizontal, 24)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Explore")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(BrandPalette.textPrimary)
+
+                        Text("Discover your next adventure from real route history and hidden picks.")
+                            .font(.subheadline)
+                            .foregroundStyle(BrandPalette.textSecondary)
+
+                        HStack(spacing: 8) {
+                            ChipLabel(title: "All", isActive: true)
+                            ChipLabel(title: "History", isActive: false)
+                            ChipLabel(title: "Hidden Gems", isActive: false)
+                        }
+
+                        if viewModel.spots.isEmpty {
+                            Text("No recommendations yet. Generate a trip to unlock Explore.")
+                                .font(.subheadline)
+                                .foregroundStyle(BrandPalette.textSecondary)
+                                .brandCard(cornerRadius: 16, padding: 14, fillOpacity: 0.08)
+                        } else {
+                            ForEach(viewModel.spots) { spot in
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(spot.subtitle.uppercased())
+                                        .font(.caption2.weight(.bold))
+                                        .foregroundStyle(Color.white.opacity(0.86))
+
+                                    Text(spot.title)
+                                        .font(.title2.weight(.bold))
+                                        .foregroundStyle(.white)
+
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "mappin.and.ellipse")
+                                        Text(spot.location)
+                                        Spacer()
+                                        Text(String(format: "%.3f, %.3f", spot.latitude, spot.longitude))
+                                    }
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.white.opacity(0.92))
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 144, alignment: .bottomLeading)
+                                .padding(16)
+                                .background(gradient(for: spot))
+                                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                                )
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 14)
+                    .padding(.bottom, 22)
+                }
+                .refreshable {
+                    await viewModel.load(force: true)
+                }
+            }
+        }
+        .navigationTitle("Explore")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.load()
+        }
+    }
+
+    private func gradient(for spot: ExploreSpot) -> LinearGradient {
+        if spot.source == "trip_history" {
+            return LinearGradient(
+                colors: [Color(red: 0.16, green: 0.49, blue: 0.85), Color(red: 0.07, green: 0.16, blue: 0.34)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        return LinearGradient(
+            colors: [Color(red: 0.58, green: 0.67, blue: 0.82), Color(red: 0.28, green: 0.36, blue: 0.52)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+}
+
+private struct ChipLabel: View {
+    let title: String
+    let isActive: Bool
+
+    var body: some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(isActive ? .white : BrandPalette.textSecondary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                Group {
+                    if isActive {
+                        BrandPalette.accentGradient
+                    } else {
+                        LinearGradient(colors: [Color.white.opacity(0.45), Color.white.opacity(0.24)], startPoint: .leading, endPoint: .trailing)
+                    }
+                }
+            )
+            .clipShape(Capsule())
     }
 }
 

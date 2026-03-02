@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
 
@@ -35,6 +36,12 @@ struct LoginView: View {
         return "Enter a valid email address."
     }
 
+    private var passwordValidationMessage: String? {
+        guard !password.isEmpty else { return nil }
+        guard normalizedPassword.count >= 4 else { return "Password looks too short." }
+        return nil
+    }
+
     private var canSubmit: Bool {
         !normalizedEmail.isEmpty &&
         !normalizedPassword.isEmpty &&
@@ -56,6 +63,19 @@ struct LoginView: View {
                         .font(.body.weight(.medium))
                         .multilineTextAlignment(.center)
                         .foregroundStyle(BrandPalette.textSecondary)
+
+                    if let message = session.sessionNoticeMessage {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .foregroundStyle(BrandPalette.accentCoral)
+                            Text(message)
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(BrandPalette.textSecondary)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                        }
+                        .brandCard(cornerRadius: 14, padding: 12, fillOpacity: 0.09)
+                    }
 
                     VStack(spacing: 14) {
                         TextField("Email", text: $email)
@@ -89,6 +109,13 @@ struct LoginView: View {
                                 .foregroundStyle(BrandPalette.accentCoral)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
+
+                        if let passwordValidationMessage {
+                            Text(passwordValidationMessage)
+                                .font(.caption)
+                                .foregroundStyle(BrandPalette.accentCoral)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
                     .brandCard()
 
@@ -118,6 +145,15 @@ struct LoginView: View {
                         BrandSecondaryButtonLabel(title: "Create Account")
                     }
 
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.fullName, .email]
+                    } onCompletion: { result in
+                        handleAppleSignIn(result)
+                    }
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
                     Spacer(minLength: 30)
                 }
                 .padding(.horizontal, 20)
@@ -132,9 +168,11 @@ struct LoginView: View {
         }
         .onChange(of: email) { _, _ in
             session.authErrorMessage = nil
+            session.clearSessionNotice()
         }
         .onChange(of: password) { _, _ in
             session.authErrorMessage = nil
+            session.clearSessionNotice()
         }
     }
 
@@ -148,6 +186,43 @@ struct LoginView: View {
             } else if session.authErrorMessage != nil {
                 Haptics.error()
             }
+        }
+    }
+
+    private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) {
+        switch result {
+        case .success(let authorization):
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = credential.identityToken,
+                  let idToken = String(data: tokenData, encoding: .utf8) else {
+                session.authErrorMessage = "Apple sign-in token could not be read."
+                Haptics.error()
+                return
+            }
+
+            let fullName = [credential.fullName?.givenName, credential.fullName?.familyName]
+                .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+            let resolvedName = fullName.isEmpty ? nil : fullName
+
+            Task {
+                await session.socialLogin(
+                    provider: "apple",
+                    idToken: idToken,
+                    email: credential.email,
+                    name: resolvedName
+                )
+
+                if session.state == .authenticated {
+                    Haptics.success()
+                } else {
+                    Haptics.error()
+                }
+            }
+        case .failure:
+            session.authErrorMessage = "Apple sign-in was cancelled or failed."
+            Haptics.error()
         }
     }
 }

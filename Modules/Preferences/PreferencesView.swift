@@ -143,7 +143,8 @@ struct PreferencesView: View {
                             await viewModel.generateTrip(
                                 destination: destination,
                                 days: days,
-                                budget: budgetTier
+                                budget: budgetTier,
+                                startCity: startCity
                             )
                             if viewModel.error == nil, viewModel.generatedTripID != nil {
                                 Haptics.success()
@@ -180,7 +181,8 @@ struct PreferencesView: View {
                                         await viewModel.generateTrip(
                                             destination: destination,
                                             days: days,
-                                            budget: budgetTier
+                                            budget: budgetTier,
+                                            startCity: startCity
                                         )
                                     }
                                 } label: {

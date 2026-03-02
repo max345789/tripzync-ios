@@ -73,9 +73,7 @@ struct ItineraryView: View {
                 NavigationStack {
                     TripEditView(trip: trip) { updatedTrip in
                         self.trip = updatedTrip
-                        if selectedDayNumber == nil {
-                            selectedDayNumber = updatedTrip.sortedItinerary.first?.dayNumber
-                        }
+                        syncSelectedDay(with: updatedTrip)
                         NotificationCenter.default.post(name: .tripsDidChange, object: nil)
                     }
                 }
@@ -168,6 +166,12 @@ struct ItineraryView: View {
                 Text("\(trip.days) Days • \(trip.budgetDisplay)")
                     .font(.subheadline)
                     .foregroundStyle(BrandPalette.textSecondary)
+
+                if !trip.startCity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text("Start city: \(trip.startCity)")
+                        .font(.footnote)
+                        .foregroundStyle(BrandPalette.textSecondary)
+                }
 
                 Text("Updated \(AppDateFormatter.tripDateTime.string(from: trip.updatedAt))")
                     .font(.caption)
@@ -328,16 +332,25 @@ struct ItineraryView: View {
             if hasNext {
                 let nextActivity = activities[index + 1]
                 let nextStart = startMinutesByIndex[index + 1]
-                let travelEstimate = estimatedTravel(from: activity, to: nextActivity)
-                let availableStay = max(0, nextStart - currentStart - travelEstimate.minutes)
-                let stayMinutes = recommendedStayMinutes(available: availableStay, isLast: false)
+                let fallbackTravelEstimate = estimatedTravel(from: activity, to: nextActivity)
+                let travelMinutes = activity.travelToNextMinutes ?? fallbackTravelEstimate.minutes
+                let availableStay = max(0, nextStart - currentStart - travelMinutes)
+                let stayMinutes = activity.durationMinutes ?? recommendedStayMinutes(available: availableStay, isLast: false)
                 let leaveByMinutes = currentStart + stayMinutes
 
                 let travelText: String = {
-                    if travelEstimate.distanceKilometers >= 0.3 {
-                        return String(format: "Travel ~%d min (%.1f km)", travelEstimate.minutes, travelEstimate.distanceKilometers)
+                    let distance = activity.travelToNextKm ?? fallbackTravelEstimate.distanceKilometers
+                    let modeText = activity.travelMode?.capitalized
+                    if distance >= 0.3 {
+                        if let modeText {
+                            return String(format: "%@ ~%d min (%.1f km)", modeText, travelMinutes, distance)
+                        }
+                        return String(format: "Travel ~%d min (%.1f km)", travelMinutes, distance)
                     }
-                    return "Travel ~\(travelEstimate.minutes) min"
+                    if let modeText {
+                        return "\(modeText) ~\(travelMinutes) min"
+                    }
+                    return "Travel ~\(travelMinutes) min"
                 }()
 
                 return ActivityTimingGuide(
@@ -349,7 +362,7 @@ struct ItineraryView: View {
             }
 
             let availableStay = max(60, dayEndMinutes - currentStart)
-            let stayMinutes = recommendedStayMinutes(available: availableStay, isLast: true)
+            let stayMinutes = activity.durationMinutes ?? recommendedStayMinutes(available: availableStay, isLast: true)
 
             return ActivityTimingGuide(
                 startTimeText: formatClock(minutesFromMidnight: currentStart),
@@ -494,9 +507,7 @@ struct ItineraryView: View {
         do {
             let loadedTrip = try await tripService.fetchTrip(id: tripID, forceRefresh: forceRefresh)
             trip = loadedTrip
-            if selectedDayNumber == nil {
-                selectedDayNumber = loadedTrip.sortedItinerary.first?.dayNumber
-            }
+            syncSelectedDay(with: loadedTrip)
             error = nil
         } catch {
             self.error = NetworkError.from(error)
@@ -521,12 +532,7 @@ struct ItineraryView: View {
             )
 
             trip = regenerated
-            if let selectedDayNumber,
-               regenerated.sortedItinerary.contains(where: { $0.dayNumber == selectedDayNumber }) {
-                self.selectedDayNumber = selectedDayNumber
-            } else {
-                self.selectedDayNumber = regenerated.sortedItinerary.first?.dayNumber
-            }
+            syncSelectedDay(with: regenerated)
 
             NotificationCenter.default.post(name: .tripsDidChange, object: nil)
             Haptics.success()
@@ -553,6 +559,21 @@ struct ItineraryView: View {
             self.error = NetworkError.from(error)
             Haptics.error()
         }
+    }
+
+    private func syncSelectedDay(with trip: Trip) {
+        guard !trip.sortedItinerary.isEmpty else {
+            selectedDayNumber = nil
+            return
+        }
+
+        if let current = selectedDayNumber,
+           trip.sortedItinerary.contains(where: { $0.dayNumber == current }) {
+            selectedDayNumber = current
+            return
+        }
+
+        selectedDayNumber = trip.sortedItinerary.first?.dayNumber
     }
 
 }

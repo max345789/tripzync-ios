@@ -47,12 +47,61 @@ final class KeychainTokenStore {
     static let shared = KeychainTokenStore()
 
     private let service = "com.tripzync.auth"
-    private let account = "access_token"
+    private let accessAccount = "access_token"
+    private let refreshAccount = "refresh_token"
 
     private init() {}
 
+    func saveAccessToken(_ token: String) throws {
+        try upsert(value: token, account: accessAccount)
+    }
+
+    func saveRefreshToken(_ token: String) throws {
+        try upsert(value: token, account: refreshAccount)
+    }
+
+    func saveTokens(accessToken: String, refreshToken: String?) throws {
+        try saveAccessToken(accessToken)
+        if let refreshToken, !refreshToken.isEmpty {
+            try saveRefreshToken(refreshToken)
+        }
+    }
+
     func saveToken(_ token: String) throws {
-        let data = Data(token.utf8)
+        try saveAccessToken(token)
+    }
+
+    func readAccessToken() -> String? {
+        readValue(account: accessAccount)
+    }
+
+    func readRefreshToken() -> String? {
+        readValue(account: refreshAccount)
+    }
+
+    func readToken() -> String? {
+        readAccessToken()
+    }
+
+    func clearAccessToken() {
+        deleteValue(account: accessAccount)
+    }
+
+    func clearRefreshToken() {
+        deleteValue(account: refreshAccount)
+    }
+
+    func clearAllTokens() {
+        clearAccessToken()
+        clearRefreshToken()
+    }
+
+    func clearToken() {
+        clearAccessToken()
+    }
+
+    private func upsert(value: String, account: String) throws {
+        let data = Data(value.utf8)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -79,7 +128,7 @@ final class KeychainTokenStore {
         }
     }
 
-    func readToken() -> String? {
+    private func readValue(account: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -100,7 +149,7 @@ final class KeychainTokenStore {
         return token
     }
 
-    func clearToken() {
+    private func deleteValue(account: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -122,9 +171,15 @@ final class NetworkManager {
     private let baseURL: URL
 
     private var unauthorizedHandler: (() -> Void)?
+    private var refreshTask: Task<Bool, Never>?
+
+    private struct HealthPayload: Decodable {
+        let status: String
+        let environment: String?
+    }
 
     private init(
-        session: URLSession = .shared,
+        session: URLSession = NetworkManager.makeSession(),
         tokenStore: KeychainTokenStore = .shared,
         baseURLString: String = AppConfiguration.apiBaseURLString
     ) {
@@ -141,6 +196,42 @@ final class NetworkManager {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         self.encoder = encoder
+    }
+
+    private static func makeSession() -> URLSession {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 90
+        configuration.timeoutIntervalForResource = 150
+        configuration.waitsForConnectivity = true
+        return URLSession(configuration: configuration)
+    }
+
+    private func shouldRetry(_ error: URLError) -> Bool {
+        switch error.code {
+        case .timedOut, .networkConnectionLost, .notConnectedToInternet:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func sendWithRetry(
+        _ request: URLRequest,
+        retries: Int = 1
+    ) async throws -> (Data, URLResponse) {
+        var attempt = 0
+        while true {
+            do {
+                return try await session.data(for: request)
+            } catch let error as URLError {
+                if attempt < retries && shouldRetry(error) {
+                    attempt += 1
+                    try? await Task.sleep(nanoseconds: UInt64(250_000_000 * attempt))
+                    continue
+                }
+                throw error
+            }
+        }
     }
 
     func setUnauthorizedHandler(_ handler: @escaping () -> Void) {
@@ -161,6 +252,59 @@ final class NetworkManager {
         queryItems: [URLQueryItem] = [],
         body: Data? = nil,
         requiresAuth: Bool = true
+    ) async throws -> APIResult<T> {
+        try await requestInternal(
+            path: path,
+            method: method,
+            queryItems: queryItems,
+            body: body,
+            requiresAuth: requiresAuth,
+            allowTokenRefresh: true
+        )
+    }
+
+    func request<T: Decodable>(
+        path: String,
+        method: HTTPMethod,
+        queryItems: [URLQueryItem] = [],
+        body: Data? = nil,
+        requiresAuth: Bool = true,
+        allowTokenRefresh: Bool
+    ) async throws -> APIResult<T> {
+        try await requestInternal(
+            path: path,
+            method: method,
+            queryItems: queryItems,
+            body: body,
+            requiresAuth: requiresAuth,
+            allowTokenRefresh: allowTokenRefresh
+        )
+    }
+
+    func refreshAccessTokenIfNeeded() async -> Bool {
+        await refreshAccessToken()
+    }
+
+    func warmUp() async {
+        do {
+            let _: APIResult<HealthPayload> = try await request(
+                path: "health",
+                method: .GET,
+                requiresAuth: false,
+                allowTokenRefresh: false
+            )
+        } catch {
+            // Best effort warm-up call; ignore failures.
+        }
+    }
+
+    private func requestInternal<T: Decodable>(
+        path: String,
+        method: HTTPMethod,
+        queryItems: [URLQueryItem],
+        body: Data?,
+        requiresAuth: Bool,
+        allowTokenRefresh: Bool
     ) async throws -> APIResult<T> {
         guard var components = URLComponents(
             url: baseURL.appendingPathComponent(path),
@@ -184,17 +328,24 @@ final class NetworkManager {
         request.httpBody = body
 
         if requiresAuth {
-            guard let token = tokenStore.readToken(), !token.isEmpty else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.unauthorizedHandler?()
+            var token = tokenStore.readAccessToken()
+            if (token == nil || token?.isEmpty == true) && allowTokenRefresh {
+                let refreshed = await refreshAccessToken()
+                if refreshed {
+                    token = tokenStore.readAccessToken()
                 }
+            }
+
+            guard let token, !token.isEmpty else {
+                handleUnauthorized()
                 throw NetworkError.unauthorized(message: "Please log in to continue.")
             }
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
         do {
-            let (data, response) = try await session.data(for: request)
+            let canRetryRequest = method == .GET && request.httpBody == nil
+            let (data, response) = try await sendWithRetry(request, retries: canRetryRequest ? 1 : 0)
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.invalidResponse
@@ -223,10 +374,21 @@ final class NetworkManager {
 
             switch httpResponse.statusCode {
             case 401:
-                tokenStore.clearToken()
-                DispatchQueue.main.async { [weak self] in
-                    self?.unauthorizedHandler?()
+                if requiresAuth && allowTokenRefresh {
+                    let refreshed = await refreshAccessToken()
+                    if refreshed {
+                        return try await requestInternal(
+                            path: path,
+                            method: method,
+                            queryItems: queryItems,
+                            body: body,
+                            requiresAuth: requiresAuth,
+                            allowTokenRefresh: false
+                        )
+                    }
                 }
+
+                handleUnauthorized()
                 throw NetworkError.unauthorized(
                     message: backendMessage ?? "Your session expired. Please log in again."
                 )
@@ -270,6 +432,52 @@ final class NetworkManager {
             }
         } catch {
             throw NetworkError.unknown(message: error.localizedDescription)
+        }
+    }
+
+    private func refreshAccessToken() async -> Bool {
+        if let refreshTask {
+            return await refreshTask.value
+        }
+
+        let task = Task { [weak self] () -> Bool in
+            guard let self else { return false }
+            guard let refreshToken = self.tokenStore.readRefreshToken(), !refreshToken.isEmpty else {
+                return false
+            }
+
+            do {
+                let requestBody = try self.encodeBody(RefreshTokenRequest(refreshToken: refreshToken))
+                let result: APIResult<AuthResponse> = try await self.requestInternal(
+                    path: "api/auth/refresh",
+                    method: .POST,
+                    queryItems: [],
+                    body: requestBody,
+                    requiresAuth: false,
+                    allowTokenRefresh: false
+                )
+
+                try self.tokenStore.saveTokens(
+                    accessToken: result.data.accessToken,
+                    refreshToken: result.data.refreshToken
+                )
+                return true
+            } catch {
+                self.tokenStore.clearAllTokens()
+                return false
+            }
+        }
+
+        refreshTask = task
+        let didRefresh = await task.value
+        refreshTask = nil
+        return didRefresh
+    }
+
+    private func handleUnauthorized() {
+        tokenStore.clearAllTokens()
+        DispatchQueue.main.async { [weak self] in
+            self?.unauthorizedHandler?()
         }
     }
 }

@@ -48,6 +48,7 @@ final class AppSession: ObservableObject {
     @Published private(set) var currentUser: AuthUser?
     @Published private(set) var profilePhotoData: Data?
     @Published var authErrorMessage: String?
+    @Published var sessionNoticeMessage: String?
     @Published var isAuthenticating = false
 
     private let authService: AuthService
@@ -63,7 +64,7 @@ final class AppSession: ObservableObject {
 
         NetworkManager.shared.setUnauthorizedHandler { [weak self] in
             Task { @MainActor in
-                self?.forceLogout()
+                self?.forceLogout(reason: "Your session expired. Please sign in again.")
             }
         }
     }
@@ -71,10 +72,13 @@ final class AppSession: ObservableObject {
     func bootstrap() async {
         guard state == .launching else { return }
 
-        if tokenStore.readToken() == nil {
+        await NetworkManager.shared.warmUp()
+
+        if tokenStore.readAccessToken() == nil && tokenStore.readRefreshToken() == nil {
             currentUser = nil
             profilePhotoData = nil
             userStore.clear()
+            sessionNoticeMessage = nil
             state = .unauthenticated
             return
         }
@@ -98,13 +102,18 @@ final class AppSession: ObservableObject {
     func login(email: String, password: String) async {
         isAuthenticating = true
         authErrorMessage = nil
+        sessionNoticeMessage = nil
 
         do {
             let response = try await authService.login(email: email, password: password)
-            try tokenStore.saveToken(response.accessToken)
+            try tokenStore.saveTokens(
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
             currentUser = response.user
             loadProfilePhoto(for: response.user.id)
             userStore.save(response.user)
+            authErrorMessage = nil
             state = .authenticated
         } catch {
             authErrorMessage = NetworkError.from(error).userMessage
@@ -117,13 +126,47 @@ final class AppSession: ObservableObject {
     func register(email: String, password: String, name: String?) async {
         isAuthenticating = true
         authErrorMessage = nil
+        sessionNoticeMessage = nil
 
         do {
             let response = try await authService.register(email: email, password: password, name: name)
-            try tokenStore.saveToken(response.accessToken)
+            try tokenStore.saveTokens(
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
             currentUser = response.user
             loadProfilePhoto(for: response.user.id)
             userStore.save(response.user)
+            authErrorMessage = nil
+            state = .authenticated
+        } catch {
+            authErrorMessage = NetworkError.from(error).userMessage
+            state = .unauthenticated
+        }
+
+        isAuthenticating = false
+    }
+
+    func socialLogin(provider: String, idToken: String, email: String?, name: String?) async {
+        isAuthenticating = true
+        authErrorMessage = nil
+        sessionNoticeMessage = nil
+
+        do {
+            let response = try await authService.socialLogin(
+                provider: provider,
+                idToken: idToken,
+                email: email,
+                name: name
+            )
+            try tokenStore.saveTokens(
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
+            currentUser = response.user
+            loadProfilePhoto(for: response.user.id)
+            userStore.save(response.user)
+            authErrorMessage = nil
             state = .authenticated
         } catch {
             authErrorMessage = NetworkError.from(error).userMessage
@@ -134,12 +177,20 @@ final class AppSession: ObservableObject {
     }
 
     func logout() {
-        tokenStore.clearToken()
+        Task {
+            try? await authService.logout()
+        }
+        tokenStore.clearAllTokens()
         userStore.clear()
         currentUser = nil
         profilePhotoData = nil
         authErrorMessage = nil
+        sessionNoticeMessage = nil
         state = .unauthenticated
+    }
+
+    func clearSessionNotice() {
+        sessionNoticeMessage = nil
     }
 
     @discardableResult
@@ -171,11 +222,12 @@ final class AppSession: ObservableObject {
         } catch {
             let mappedError = NetworkError.from(error)
             if mappedError.statusCode == 401 {
-                tokenStore.clearToken()
+                tokenStore.clearAllTokens()
                 userStore.clear()
                 currentUser = nil
                 profilePhotoData = nil
                 state = .unauthenticated
+                sessionNoticeMessage = mappedError.userMessage
                 if !silentFailure {
                     authErrorMessage = mappedError.userMessage
                 }
@@ -193,11 +245,13 @@ final class AppSession: ObservableObject {
         }
     }
 
-    private func forceLogout() {
-        tokenStore.clearToken()
+    private func forceLogout(reason: String) {
+        tokenStore.clearAllTokens()
         userStore.clear()
         currentUser = nil
         profilePhotoData = nil
+        authErrorMessage = reason
+        sessionNoticeMessage = reason
         state = .unauthenticated
     }
 
@@ -292,7 +346,7 @@ final class PreferencesViewModel: ObservableObject {
 
     private let tripService = TripService()
 
-    func generateTrip(destination: String, days: Int, budget: BudgetTier) async {
+    func generateTrip(destination: String, days: Int, budget: BudgetTier, startCity: String?) async {
         isLoading = true
         error = nil
         generatedTripID = nil
@@ -301,7 +355,8 @@ final class PreferencesViewModel: ObservableObject {
             let createdTrip = try await tripService.generateTrip(
                 destination: destination,
                 days: days,
-                budget: budget
+                budget: budget,
+                startCity: startCity
             )
             generatedTripID = createdTrip.id
             NotificationCenter.default.post(name: .tripsDidChange, object: nil)

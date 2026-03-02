@@ -7,6 +7,10 @@ struct Activity: Codable, Hashable, Identifiable {
     let description: String
     let latitude: Double
     let longitude: Double
+    let durationMinutes: Int?
+    let travelToNextMinutes: Int?
+    let travelToNextKm: Double?
+    let travelMode: String?
 
     var id: String {
         "\(time)-\(title)-\(latitude)-\(longitude)"

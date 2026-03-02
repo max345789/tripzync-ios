@@ -40,12 +40,14 @@ struct TripGenerateRequest: Codable, Hashable {
     let destination: String
     let days: Int
     let budget: String
+    let startCity: String?
 }
 
 struct TripUpdateRequest: Codable, Hashable {
     let destination: String?
     let days: Int?
     let budget: String?
+    let startCity: String?
 }
 
 struct TripRegenerateRequest: Codable, Hashable {
@@ -77,11 +79,24 @@ struct LoginRequest: Codable, Hashable {
     let password: String
 }
 
+struct SocialLoginRequest: Codable, Hashable {
+    let provider: String
+    let idToken: String
+    let email: String?
+    let name: String?
+}
+
 struct AuthResponse: Codable, Hashable {
     let accessToken: String
+    let refreshToken: String?
     let tokenType: String
     let expiresIn: String
+    let refreshExpiresIn: String?
     let user: AuthUser
+}
+
+struct RefreshTokenRequest: Codable, Hashable {
+    let refreshToken: String
 }
 
 struct PaginationMeta: Codable, Hashable {

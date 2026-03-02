@@ -44,28 +44,30 @@ enum BrandPalette {
     }
 
     static let backgroundTop = themed(
-        light: UIColor(red: 0.96, green: 0.97, blue: 0.99, alpha: 1),
-        dark: UIColor(red: 0.07, green: 0.08, blue: 0.10, alpha: 1)
+        light: UIColor(red: 0.92, green: 0.95, blue: 0.98, alpha: 1),
+        dark: UIColor(red: 0.05, green: 0.09, blue: 0.14, alpha: 1)
     )
     static let backgroundBottom = themed(
-        light: UIColor(red: 0.90, green: 0.93, blue: 0.97, alpha: 1),
-        dark: UIColor(red: 0.01, green: 0.01, blue: 0.02, alpha: 1)
+        light: UIColor(red: 0.96, green: 0.97, blue: 0.98, alpha: 1),
+        dark: UIColor(red: 0.06, green: 0.10, blue: 0.17, alpha: 1)
     )
 
     static let accentRed = themed(
-        light: UIColor(red: 0.96, green: 0.63, blue: 0.33, alpha: 1),
-        dark: UIColor(red: 0.46, green: 0.78, blue: 0.98, alpha: 1)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 1),
+        dark: UIColor(red: 0.22, green: 0.61, blue: 1.00, alpha: 1)
     )
     static let accentCoral = themed(
-        light: UIColor(red: 1.00, green: 0.73, blue: 0.45, alpha: 1),
-        dark: UIColor(red: 0.70, green: 0.90, blue: 1.00, alpha: 1)
+        light: UIColor(red: 0.34, green: 0.68, blue: 0.97, alpha: 1),
+        dark: UIColor(red: 0.44, green: 0.75, blue: 1.00, alpha: 1)
     )
     static let accentOrange = themed(
-        light: UIColor(red: 1.00, green: 0.83, blue: 0.62, alpha: 1),
-        dark: UIColor(red: 0.56, green: 0.84, blue: 1.00, alpha: 1)
+        light: UIColor(red: 0.11, green: 0.45, blue: 0.85, alpha: 1),
+        dark: UIColor(red: 0.14, green: 0.50, blue: 0.92, alpha: 1)
     )
-    // Keep navigation controls neutral and consistent across light/dark.
-    static let navigationAccent = Color(red: 0.62, green: 0.64, blue: 0.68)
+    static let navigationAccent = themed(
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 1),
+        dark: UIColor(red: 0.44, green: 0.75, blue: 1.00, alpha: 1)
+    )
 
     static let textPrimary = themed(
         light: UIColor(red: 0.14, green: 0.16, blue: 0.20, alpha: 1),
@@ -81,32 +83,32 @@ enum BrandPalette {
     )
 
     static let fieldFill = themed(
-        light: UIColor(red: 1.00, green: 0.94, blue: 0.87, alpha: 0.32),
-        dark: UIColor(red: 0.72, green: 0.89, blue: 1.00, alpha: 0.13)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 0.08),
+        dark: UIColor(red: 0.40, green: 0.70, blue: 1.00, alpha: 0.14)
     )
     static let cardFill = themed(
-        light: UIColor(red: 1.00, green: 0.93, blue: 0.85, alpha: 0.28),
-        dark: UIColor(red: 0.72, green: 0.89, blue: 1.00, alpha: 0.11)
+        light: UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.22),
+        dark: UIColor(red: 0.42, green: 0.72, blue: 1.00, alpha: 0.10)
     )
     static let secondaryButtonFill = themed(
-        light: UIColor(red: 1.00, green: 0.94, blue: 0.87, alpha: 0.65),
-        dark: UIColor(red: 0.72, green: 0.89, blue: 1.00, alpha: 0.08)
+        light: UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.72),
+        dark: UIColor(red: 0.39, green: 0.66, blue: 0.95, alpha: 0.09)
     )
     static let borderStrong = themed(
-        light: UIColor(red: 1.00, green: 0.74, blue: 0.50, alpha: 0.48),
-        dark: UIColor(red: 0.77, green: 0.92, blue: 1.00, alpha: 0.34)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 0.45),
+        dark: UIColor(red: 0.50, green: 0.78, blue: 1.00, alpha: 0.34)
     )
     static let borderSoft = themed(
-        light: UIColor(red: 1.00, green: 0.75, blue: 0.53, alpha: 0.34),
-        dark: UIColor(red: 0.78, green: 0.92, blue: 1.00, alpha: 0.26)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 0.26),
+        dark: UIColor(red: 0.50, green: 0.78, blue: 1.00, alpha: 0.24)
     )
     static let cardShadow = themed(
-        light: UIColor(red: 1.00, green: 0.71, blue: 0.45, alpha: 0.10),
-        dark: UIColor(red: 0.58, green: 0.86, blue: 1.00, alpha: 0.10)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 0.11),
+        dark: UIColor(red: 0.35, green: 0.65, blue: 1.00, alpha: 0.10)
     )
     static let primaryGlow = themed(
-        light: UIColor(red: 1.00, green: 0.66, blue: 0.40, alpha: 0.24),
-        dark: UIColor(red: 0.70, green: 0.90, blue: 1.00, alpha: 0.32)
+        light: UIColor(red: 0.17, green: 0.55, blue: 0.93, alpha: 0.24),
+        dark: UIColor(red: 0.46, green: 0.78, blue: 1.00, alpha: 0.32)
     )
 
     static let accentGradient = LinearGradient(

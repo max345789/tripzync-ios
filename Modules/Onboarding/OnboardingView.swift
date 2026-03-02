@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @EnvironmentObject private var session: AppSession
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -35,6 +37,19 @@ struct OnboardingView: View {
                             .padding(.horizontal, 8)
 
                         HeroDevicePreview()
+
+                        if let message = session.sessionNoticeMessage {
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "clock.arrow.circlepath")
+                                    .foregroundStyle(BrandPalette.accentCoral)
+                                Text(message)
+                                    .font(.footnote.weight(.medium))
+                                    .foregroundStyle(BrandPalette.textSecondary)
+                                    .multilineTextAlignment(.leading)
+                                Spacer(minLength: 0)
+                            }
+                            .brandCard(cornerRadius: 14, padding: 12, fillOpacity: 0.09)
+                        }
 
                         NavigationLink {
                             SignupView()
@@ -210,4 +225,6 @@ private struct FeaturePreviewCard: View {
 
 #Preview {
     OnboardingView()
+        .environmentObject(AppSession())
+        .environmentObject(ThemeManager())
 }
